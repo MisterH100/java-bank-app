@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.ArrayList;
 import java.time.LocalDate;
 
@@ -75,13 +76,66 @@ public class BankAccount{
             return;
         }
         String transactionHistoryDatabaseName = "transaction_history.csv";
+        String accountsDatabaseName = "accounts_database.csv";
         ArrayList<String> transactionList = new ArrayList<String>();
+        ArrayList<String> accountList = new ArrayList<String>();
         HashMap<String,String> transactionDetails = new HashMap<String,String>();
+        HashMap<String,String> accountDetails = new HashMap<String,String>();
         LocalDate transactionDate = LocalDate.now();
         String transactionDateString = transactionDate.toString();
         String withdrawAmountString = Float.toString(withdrawAmount);
         this.balance = this.balance - withdrawAmount;
-        
+
+        try {
+            File database = new File(accountsDatabaseName);
+            Scanner databaseReader = new Scanner(database);
+            while (databaseReader.hasNextLine()) {
+                String data = databaseReader.nextLine();
+                accountList.add(data);
+                
+            }
+            databaseReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+         for(int i=0;i<accountList.size();i++){
+            String[] tempArray = accountList.get(i).split(",");
+            if(tempArray[0].strip().contentEquals(accountID)){
+                System.out.println("Transferring...");
+                float accountAmount = Float.parseFloat(tempArray[4]);
+                float newAmount = accountAmount - withdrawAmount;
+                String balance = Float.toString(newAmount);
+
+                accountDetails.put("accountNumber", tempArray[0]);
+                accountDetails.put("firstName", tempArray[1]);
+                accountDetails.put("lastName", tempArray[2]);
+                accountDetails.put("accountType", tempArray[3]);
+                accountDetails.put("balance",balance );
+                
+                accountList.set(i,accountDetails.get("accountNumber")+","+accountDetails.get("firstName")+","+accountDetails.get("lastName")+","+accountDetails.get("accountType")+","+accountDetails.get("balance"));
+
+                try {
+                    FileWriter myWriter = new FileWriter(accountsDatabaseName);
+                    for(int j =0;j<accountList.size();j++){
+                        if(j==0){
+                            myWriter.append(accountList.get(j));
+                        }
+                        else{
+                            myWriter.append("\n"+accountList.get(j));
+                        }
+                    }
+                    myWriter.close();
+                    System.out.println("Transfer successful");
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+                break;
+            }
+            
+        }
+
         transactionDetails.put("accountNumber", accountID);
         transactionDetails.put("transactionType","Withdraw");
         transactionDetails.put("transactionDate",transactionDateString);
@@ -99,6 +153,8 @@ public class BankAccount{
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+
+
 
         transactionList.add(transactionDetails.get("accountNumber")+","+transactionDetails.get("transactionType")+","+transactionDetails.get("transactionDate")+","+transactionDetails.get("transactionAmount")+","+transactionDetails.get("transactionBetween"));
 
@@ -134,12 +190,66 @@ public class BankAccount{
     //deposit funds
     public void deposit(String accountID,float depositAmount){
         String transactionHistoryDatabaseName = "transaction_history.csv";
+        String accountsDatabaseName = "accounts_database.csv";
         ArrayList<String> transactionList = new ArrayList<String>();
+        ArrayList<String> accountList = new ArrayList<String>();
         HashMap<String,String> transactionDetails = new HashMap<String,String>();
+        HashMap<String,String> accountDetails = new HashMap<String,String>();
         LocalDate transactionDate = LocalDate.now();
         String transactionDateString = transactionDate.toString();
         String depositAmountString = Float.toString(depositAmount);
         this.balance = this.balance + depositAmount;
+
+        try {
+            File database = new File(accountsDatabaseName);
+            Scanner databaseReader = new Scanner(database);
+            while (databaseReader.hasNextLine()) {
+                String data = databaseReader.nextLine();
+                accountList.add(data);
+                
+            }
+            databaseReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+         for(int i=0;i<accountList.size();i++){
+            String[] tempArray = accountList.get(i).split(",");
+            if(tempArray[0].strip().contentEquals(accountID)){
+                System.out.println("Transferring...");
+                float accountAmount = Float.parseFloat(tempArray[4]);
+                float newAmount = accountAmount + depositAmount;
+                String balance = Float.toString(newAmount);
+
+                accountDetails.put("accountNumber", tempArray[0]);
+                accountDetails.put("firstName", tempArray[1]);
+                accountDetails.put("lastName", tempArray[2]);
+                accountDetails.put("accountType", tempArray[3]);
+                accountDetails.put("balance",balance );
+                
+                accountList.set(i,accountDetails.get("accountNumber")+","+accountDetails.get("firstName")+","+accountDetails.get("lastName")+","+accountDetails.get("accountType")+","+accountDetails.get("balance"));
+
+                try {
+                    FileWriter myWriter = new FileWriter(accountsDatabaseName);
+                    for(int j =0;j<accountList.size();j++){
+                        if(j==0){
+                            myWriter.append(accountList.get(j));
+                        }
+                        else{
+                            myWriter.append("\n"+accountList.get(j));
+                        }
+                    }
+                    myWriter.close();
+                    System.out.println("Transfer successful");
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+                break;
+            }
+            
+        }
+
 
         transactionDetails.put("accountNumber", accountID);
         transactionDetails.put("transactionType","Deposit");
@@ -271,7 +381,7 @@ public class BankAccount{
             
         }
 
-        transactionDetails.put("accountNumber", accountID);
+        transactionDetails.put("accountNumber", this.accountNumber);
         transactionDetails.put("transactionType","Transfer");
         transactionDetails.put("transactionDate",transactionDateString);
         transactionDetails.put("transactionAmount",transferAmountString);
@@ -375,7 +485,6 @@ public class BankAccount{
         float amount;
         String accountID;
         final String accountsDatabaseName = "accounts_database.csv";
-        generateAccountNumber accNumber = new generateAccountNumber();
         HashMap<String, String> accountDetails = new HashMap<String, String>();
         BankAccount account = new BankAccount(); 
         @SuppressWarnings("resource")
@@ -399,6 +508,7 @@ public class BankAccount{
             String accountType;
             String[] accountTypeOptions = {"Checking","Savings"};
             final String initialBalance = "100";
+            ArrayList<String> accountList = new ArrayList<String>();
 
             //prompt user to enter details and store them in a hashmap
             System.out.print("Enter your First Name: ");
@@ -415,21 +525,54 @@ public class BankAccount{
             System.out.print("Choose Account Type (options:1,2): ");
             option = mainInput.nextInt();
             accountType = accountTypeOptions[option-1];
+            
+            //generating 10 digit account number 
+            Random random = new Random();
+            char [] digits = new char[10];
+            digits[0] = (char) (random.nextInt(9) + '1');
+            for(int i=1; i<digits.length; i++) {
+                digits[i] = (char) (random.nextInt(10) + '0');
+            }
+            
+            long generatedAccNumber= Long.parseLong(new String(digits));
 
-            accountNumber = Long.toString(accNumber.generate());
+            accountNumber = Long.toString(generatedAccNumber);
             accountDetails.put("accountNumber",accountNumber);
             accountDetails.put("accountType",accountType);
             accountDetails.put("balance",initialBalance);
-
+            
+            try {
+            File database = new File(accountsDatabaseName);
+            Scanner databaseReader = new Scanner(database);
+            while (databaseReader.hasNextLine()) {
+                String data = databaseReader.nextLine();
+                accountList.add(data);
+                
+            }
+            databaseReader.close();
+            } catch (FileNotFoundException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+            
+            accountList.add(accountDetails.get("accountNumber")+","+accountDetails.get("firstName")+","+accountDetails.get("lastName")+","+accountDetails.get("accountType")+","+accountDetails.get("balance"));
             //write details to CSV file (database)
             try {
-                FileWriter myWriter = new FileWriter(accountsDatabaseName,true);
-                myWriter.write("\n"+accountDetails.get("accountNumber")+","+accountDetails.get("firstName")+","+accountDetails.get("lastName")+","+accountDetails.get("accountType")+","+accountDetails.get("balance"));
+                FileWriter myWriter = new FileWriter(accountsDatabaseName);
+                for(int i =0;i<accountList.size();i++){
+                    if(i==0){
+                        myWriter.append(accountList.get(i));
+                    }
+                    else{
+                        myWriter.append("\n"+accountList.get(i));
+                    }
+                }
                 myWriter.close();
                 System.out.println("Successfully created account");
             } catch (IOException e) {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
+                return;
             }
             
             //use setDetails method to set account details 
