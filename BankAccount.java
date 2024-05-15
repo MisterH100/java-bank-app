@@ -490,6 +490,31 @@ public class BankAccount{
         @SuppressWarnings("resource")
         Scanner mainInput = new Scanner(System.in);
         
+        //create=ing CSV files (databases)
+        try {
+            File accounts_file = new File("accounts_database.csv");
+            if (accounts_file.createNewFile()) {
+            System.out.println("Created accounts database");
+        } else {
+            System.out.println("Connected to accounts database.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        
+        try {
+            File transactions_file = new File("transaction_history.csv");
+            if (transactions_file.createNewFile()) {
+            System.out.println("Created to transactions database");
+        } else {
+            System.out.println("Connected to transactions database.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }  
+
         System.out.println(" ");
         System.out.println("***WELCOME TO THOBEKA BANKING, WHERE WE TAKE YOUR MONEY SERIOUSLY***");
         System.out.println("");
