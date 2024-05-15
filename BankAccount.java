@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 public class BankAccount{
     //instance variables
@@ -62,39 +63,318 @@ public class BankAccount{
         
     }
     //withdraw funds
-    public void withdraw(float withdrawAmount){
+    public void withdraw(String accountID,float withdrawAmount){
         if(withdrawAmount > this.balance){
+            System.out.println(" ");
+            System.out.println("|------------------------------|"); 
+            System.out.println("Transaction Failed");
             System.out.println(" ");
             System.out.println("Insufficient funds");
             System.out.println("Available funds: "+ this.balance);
             System.out.println(" ");
-        } else {
-            System.out.println(" ");
-            this.balance = this.balance - withdrawAmount;
-            System.out.println("Withdrawal success"+ " (-" + withdrawAmount + ")");
-            System.out.println("New balance: "+ this.balance);
-            System.out.println(" ");
+            return;
         }
+        String transactionHistoryDatabaseName = "transaction_history.csv";
+        ArrayList<String> transactionList = new ArrayList<String>();
+        HashMap<String,String> transactionDetails = new HashMap<String,String>();
+        LocalDate transactionDate = LocalDate.now();
+        String transactionDateString = transactionDate.toString();
+        String withdrawAmountString = Float.toString(withdrawAmount);
+        this.balance = this.balance - withdrawAmount;
+        
+        transactionDetails.put("accountNumber", accountID);
+        transactionDetails.put("transactionType","Withdraw");
+        transactionDetails.put("transactionDate",transactionDateString);
+        transactionDetails.put("transactionAmount",withdrawAmountString);
+        transactionDetails.put("transactionBetween",accountID);
+        try {
+            File database = new File(transactionHistoryDatabaseName);
+            Scanner databaseReader = new Scanner(database);
+            while (databaseReader.hasNextLine()) {
+                String data = databaseReader.nextLine();
+                transactionList.add(data);    
+            }
+            databaseReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        transactionList.add(transactionDetails.get("accountNumber")+","+transactionDetails.get("transactionType")+","+transactionDetails.get("transactionDate")+","+transactionDetails.get("transactionAmount")+","+transactionDetails.get("transactionBetween"));
+
+        try {
+            FileWriter myWriter = new FileWriter(transactionHistoryDatabaseName);
+            for(int i =0;i<transactionList.size();i++){
+                if(i==0){
+                    myWriter.append(transactionList.get(i));
+                }
+                else{
+                    myWriter.append("\n"+transactionList.get(i));
+                }
+            }
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        System.out.println(" ");
+        System.out.println("|------------------------------|"); 
+        System.out.println("Transaction Complete");
+        System.out.println(" ");  
+        System.out.println("Transaction Type: Withdraw"); 
+        System.out.println("Transaction Date: "+ transactionDate);
+        System.out.println("Account: "+ this.accountNumber);
+        System.out.println("Account Type: "+ this.accountType); 
+        System.out.println("Amount: "+ "-"+withdrawAmount);
+        System.out.println("Available Balance: "+ this.balance);
+        System.out.println(" ");
         
     }
     //deposit funds
-    public void deposit(float depositAmount){
+    public void deposit(String accountID,float depositAmount){
+        String transactionHistoryDatabaseName = "transaction_history.csv";
+        ArrayList<String> transactionList = new ArrayList<String>();
+        HashMap<String,String> transactionDetails = new HashMap<String,String>();
+        LocalDate transactionDate = LocalDate.now();
+        String transactionDateString = transactionDate.toString();
+        String depositAmountString = Float.toString(depositAmount);
         this.balance = this.balance + depositAmount;
+
+        transactionDetails.put("accountNumber", accountID);
+        transactionDetails.put("transactionType","Deposit");
+        transactionDetails.put("transactionDate",transactionDateString);
+        transactionDetails.put("transactionAmount",depositAmountString);
+        transactionDetails.put("transactionBetween",accountID);
+        try {
+            File database = new File(transactionHistoryDatabaseName);
+            Scanner databaseReader = new Scanner(database);
+            while (databaseReader.hasNextLine()) {
+                String data = databaseReader.nextLine();
+                transactionList.add(data);    
+            }
+            databaseReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        transactionList.add(transactionDetails.get("accountNumber")+","+transactionDetails.get("transactionType")+","+transactionDetails.get("transactionDate")+","+transactionDetails.get("transactionAmount")+","+transactionDetails.get("transactionBetween"));
+
+        try {
+            FileWriter myWriter = new FileWriter(transactionHistoryDatabaseName);
+            for(int i =0;i<transactionList.size();i++){
+                if(i==0){
+                    myWriter.append(transactionList.get(i));
+                }
+                else{
+                    myWriter.append("\n"+transactionList.get(i));
+                }
+            }
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+
         System.out.println(" ");
-        System.out.println("Deposit success" + " (+" + depositAmount +")");
-        System.out.println("New balance: "+ this.balance);
+        System.out.println("|------------------------------|"); 
+        System.out.println("Transaction Complete");
+        System.out.println(" ");  
+        System.out.println("Transaction Type: Deposit"); 
+        System.out.println("Transaction Date: "+ transactionDate);
+        System.out.println("Account: "+ this.accountNumber);
+        System.out.println("Account Type: "+ this.accountType); 
+        System.out.println("Amount: "+ "+"+depositAmount);
+        System.out.println("Available Balance: "+ this.balance);
         System.out.println(" ");
     }
 
-    public void getTransactions(){
+    public void transfer(String accountID,float transferAmount){
+        String accountsDatabaseName = "accounts_database.csv";
+        String transactionHistoryDatabaseName = "transaction_history.csv";
+        ArrayList<String> accountList = new ArrayList<String>();
+        ArrayList<String> transactionList = new ArrayList<String>();
+        HashMap<String, String> accountDetails = new HashMap<String, String>();
+        HashMap<String,String> transactionDetails = new HashMap<String,String>();
+        LocalDate transactionDate = LocalDate.now();
+        String transactionDateString = transactionDate.toString();
+        String transferAmountString = Float.toString(transferAmount);
+
+        if(transferAmount>this.balance){
+            System.out.println(" ");
+            System.out.println("|------------------------------|"); 
+            System.out.println("Transaction Failed");
+            System.out.println(" ");
+            System.out.println("Insufficient funds");
+            System.out.println("Available funds: "+ this.balance);
+            System.out.println(" ");
+            return;
+        }
+        System.out.println(" ");
+        System.out.println("|------------------------------|"); 
+        System.out.println("Transfer to: "+ accountID);
+        System.out.println("Amount: "+ transferAmount);
+        try {
+            File database = new File(accountsDatabaseName);
+            Scanner databaseReader = new Scanner(database);
+            while (databaseReader.hasNextLine()) {
+                String data = databaseReader.nextLine();
+                accountList.add(data);
+                
+            }
+            databaseReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        System.out.println(" ");
+        System.out.println("Validating account number...");
+        boolean transferred = false;
+        for(int i=0;i<accountList.size();i++){
+            String[] tempArray = accountList.get(i).split(",");
+            if(tempArray[0].strip().contentEquals(accountID)){
+                System.out.println("Transferring...");
+                float accountAmount = Float.parseFloat(tempArray[4]);
+                float newAmount = accountAmount + transferAmount;
+                String balance = Float.toString(newAmount);
+
+                accountDetails.put("accountNumber", tempArray[0]);
+                accountDetails.put("firstName", tempArray[1]);
+                accountDetails.put("lastName", tempArray[2]);
+                accountDetails.put("accountType", tempArray[3]);
+                accountDetails.put("balance",balance );
+                
+                accountList.set(i,accountDetails.get("accountNumber")+","+accountDetails.get("firstName")+","+accountDetails.get("lastName")+","+accountDetails.get("accountType")+","+accountDetails.get("balance"));
+
+                try {
+                    FileWriter myWriter = new FileWriter(accountsDatabaseName);
+                    for(int j =0;j<accountList.size();j++){
+                        if(j==0){
+                            myWriter.append(accountList.get(j));
+                        }
+                        else{
+                            myWriter.append("\n"+accountList.get(j));
+                        }
+                    }
+                    myWriter.close();
+                    System.out.println("Transfer successful");
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                    transferred = false;
+                }
+                transferred = true;
+                break;
+            }
+            
+        }
+
+        transactionDetails.put("accountNumber", accountID);
+        transactionDetails.put("transactionType","Transfer");
+        transactionDetails.put("transactionDate",transactionDateString);
+        transactionDetails.put("transactionAmount",transferAmountString);
+        transactionDetails.put("transactionBetween",accountID);
+        try {
+            File database = new File(transactionHistoryDatabaseName);
+            Scanner databaseReader = new Scanner(database);
+            while (databaseReader.hasNextLine()) {
+                String data = databaseReader.nextLine();
+                transactionList.add(data);    
+            }
+            databaseReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        transactionList.add(transactionDetails.get("accountNumber")+","+transactionDetails.get("transactionType")+","+transactionDetails.get("transactionDate")+","+transactionDetails.get("transactionAmount")+","+transactionDetails.get("transactionBetween"));
+
+        try {
+            FileWriter myWriter = new FileWriter(transactionHistoryDatabaseName);
+            for(int i =0;i<transactionList.size();i++){
+                if(i==0){
+                    myWriter.append(transactionList.get(i));
+                }
+                else{
+                    myWriter.append("\n"+transactionList.get(i));
+                }
+            }
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+
+        if(transferred){
+            System.out.println("|------------------------------|"); 
+            System.out.println("Transaction Complete");
+            System.out.println(" "); 
+            System.out.println("Transaction Type: Transfer"); 
+            System.out.println("Transaction Date:" + transactionDate);
+            System.out.println("From: " +this.accountNumber); 
+            System.out.println("To: "+accountID); 
+            System.out.println("Amount: " + transferAmount);
+        }else{
+            System.out.println("Failed to transfer");
+        }
+    }
+
+    public void getTransactions(String accountID){
+        String transactionHistoryDatabaseName = "transaction_history.csv";
+        ArrayList<String> transactionList = new ArrayList<String>();
+        int count =0;
+        int match =0;
         
+        try {
+            File database = new File(transactionHistoryDatabaseName);
+            Scanner databaseReader = new Scanner(database);
+            while (databaseReader.hasNextLine()) {
+                String data = databaseReader.nextLine();
+                transactionList.add(data);
+            }
+            databaseReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        System.out.println("|------------------------------|");
+        System.out.println("Transaction History");
+        System.out.println(" ");
+        if(transactionList.size() <1){
+            System.out.println("No transaction history at this moment");
+            return;
+        }
+        for(int i=0;i<transactionList.size();i++){
+            String[] tempArray = transactionList.get(i).split(",");
+            if(tempArray[0].contentEquals(accountID)){
+                match = match+1;
+                System.out.println("Account Number: "+ tempArray[0]);
+                System.out.println("Transaction Type: "+ tempArray[1]);
+                System.out.println("Transaction Date: "+ tempArray[2]);
+                System.out.println("Amount: "+ tempArray[3]);
+                System.out.println("To: "+ tempArray[4]);
+                System.out.println("|------------------------------|");
+            }
+            if(count == transactionList.size()-1){
+                if(match ==0){
+                    System.out.println("No transaction history for this account at the moment");
+                }
+            }
+            count = count+1;
+
+        }
     }
 
     public static void main(String[] args) {
+        //global variables
         int choice;
         int option;
         float amount;
-        final String databaseName = "accounts_database.csv";
+        String accountID;
+        final String accountsDatabaseName = "accounts_database.csv";
         generateAccountNumber accNumber = new generateAccountNumber();
         HashMap<String, String> accountDetails = new HashMap<String, String>();
         BankAccount account = new BankAccount(); 
@@ -143,7 +423,7 @@ public class BankAccount{
 
             //write details to CSV file (database)
             try {
-                FileWriter myWriter = new FileWriter(databaseName,true);
+                FileWriter myWriter = new FileWriter(accountsDatabaseName,true);
                 myWriter.write("\n"+accountDetails.get("accountNumber")+","+accountDetails.get("firstName")+","+accountDetails.get("lastName")+","+accountDetails.get("accountType")+","+accountDetails.get("balance"));
                 myWriter.close();
                 System.out.println("Successfully created account");
@@ -159,6 +439,7 @@ public class BankAccount{
             System.out.println(" ");
             System.out.println("|------------------------------|");
             System.out.println("Account Details");
+            System.out.println(" ");
             System.out.println("Account Number: "+account.getAccountNumber());
             System.out.println("Account Holder Name: "+account.getAccountHolder());
             System.out.println("Account Type: " + account.getAccountType());
@@ -171,33 +452,58 @@ public class BankAccount{
             do {
                 System.out.println("|------------------------------|");
                 System.out.println("Transact");
+                System.out.println(" ");
                 System.out.println("1. Withdraw");
                 System.out.println("2. Deposit");
-                System.out.println("3. Balance");
-                System.out.println("4. Quit");
-                System.out.print("Choose transaction (options:1,2,3,4): ");
+                System.out.println("3. Transfer");
+                System.out.println("4. Balance");
+                System.out.println("5. Transaction History");
+                System.out.println("6. Quit");
+                System.out.print("Choose transaction (options:1,2,3,4,5,6): ");
                 option = mainInput.nextInt();
                 mainInput.nextLine();
                 switch(option){
                     case 1:
                         //withdrawal
+                        accountID = account.getAccountNumber();
                         System.out.print("Withdraw amount: ");
                         amount = mainInput.nextInt();
-                        account.withdraw(amount);
+                        account.withdraw(accountID,amount);
                         break;
                     case 2:
                         //deposit
+                        accountID = account.getAccountNumber();
                         System.out.print("Deposit amount: ");
                         amount = mainInput.nextInt();
-                        account.deposit(amount);
+                        account.deposit(accountID,amount);
                         break;
                     case 3:
+                        //transfer
+                        System.out.println(" ");
+                        System.out.print("Enter a 10 digit account number (eg: 1234567890): ");
+                        accountID = mainInput.nextLine();
+                        System.out.print("Enter amount to transfer: ");
+                        amount = mainInput.nextFloat();
+                        account.transfer(accountID, amount);
+                        System.out.println(" ");
+                        break;
+                    case 4:
                         //check balance
+                        System.out.println(" ");
+                        System.out.println("|------------------------------|");
+                        System.out.println("Account Balance");
                         System.out.println(" ");
                         System.out.println("Available funds: "+ account.getBalance());
                         System.out.println(" ");
                         break;
-                    case 4:
+                    case 5:
+                        //get transaction history
+                        System.out.println(" ");
+                        accountID = account.getAccountNumber();
+                        account.getTransactions(accountID);
+                        System.out.println(" ");
+                        break;
+                    case 6:
                         //exit transactions
                         System.out.println(" ");
                         System.out.println("***Thank you for banking with us***");
@@ -207,17 +513,17 @@ public class BankAccount{
                         break;
                 }
                 
-            } while (option != 4);
+            } while (option != 6);
             
         }
         else if (choice ==2) {
             //local scope variables
             ArrayList<String> accountList = new ArrayList<String>();
-            String[] accountDetailsList;
+            String[] accountDetailsList;                            
 
             //read CSV file (database) and add the data to accountList
             try {
-                File database = new File(databaseName);
+                File database = new File(accountsDatabaseName);
                 Scanner databaseReader = new Scanner(database);
                 while (databaseReader.hasNextLine()) {
                     String data = databaseReader.nextLine();
@@ -239,6 +545,7 @@ public class BankAccount{
             System.out.println(" ");
             System.out.println("|------------------------------|"); 
             System.out.println("Account(s) found:");
+            System.out.println(" ");
             for(int i =0; i<accountList.size();i++){
                 String[] tempList = accountList.get(i).split(",");
                 System.out.println(i+1+". "+tempList[0]);
@@ -261,6 +568,7 @@ public class BankAccount{
             System.out.println(" ");
             System.out.println("|------------------------------|");
             System.out.println("Account Details");
+            System.out.println(" ");
             System.out.println("Account Number: "+account.getAccountNumber());
             System.out.println("Account Holder Name: "+account.getAccountHolder());
             System.out.println("Account Type: " + account.getAccountType());
@@ -273,33 +581,58 @@ public class BankAccount{
             do {
                 System.out.println("|------------------------------|");
                 System.out.println("Transact");
+                System.out.println(" ");
                 System.out.println("1. Withdraw");
                 System.out.println("2. Deposit");
-                System.out.println("3. Balance");
-                System.out.println("4. Quit");
-                System.out.print("Choose transaction (options:1,2,3,4): ");
+                System.out.println("3. Transfer");
+                System.out.println("4. Balance");
+                System.out.println("5. Transaction History");
+                System.out.println("6. Quit");
+                System.out.print("Choose transaction (options:1,2,3,4,5,6): ");
                 option = mainInput.nextInt();
                 mainInput.nextLine();
                 switch(option){
                     case 1:
                         //withdrawal
+                        accountID = account.getAccountNumber();
                         System.out.print("Withdraw amount: ");
                         amount = mainInput.nextInt();
-                        account.withdraw(amount);
+                        account.withdraw(accountID,amount);
                         break;
                     case 2:
                         //deposit
+                        accountID = account.getAccountNumber();
                         System.out.print("Deposit amount: ");
                         amount = mainInput.nextInt();
-                        account.deposit(amount);
+                        account.deposit(accountID,amount);
                         break;
                     case 3:
+                        //transfer
+                        System.out.println(" ");
+                        System.out.print("Enter a 10 digit account number (eg: 1234567890): ");
+                        accountID = mainInput.nextLine();
+                        System.out.print("Enter amount to transfer: ");
+                        amount = mainInput.nextFloat();
+                        account.transfer(accountID, amount);
+                        System.out.println(" ");
+                        break;
+                    case 4:
                         //check balance
+                        System.out.println(" ");
+                        System.out.println("|------------------------------|");
+                        System.out.println("Account Balance");
                         System.out.println(" ");
                         System.out.println("Available funds: "+ account.getBalance());
                         System.out.println(" ");
                         break;
-                    case 4:
+                    case 5:
+                        //get transaction history
+                        System.out.println(" ");
+                        accountID = account.getAccountNumber();
+                        account.getTransactions(accountID);
+                        System.out.println(" ");
+                        break;
+                    case 6:
                         //exit transactions
                         System.out.println(" ");
                         System.out.println("***Thank you for banking with us***");
@@ -308,8 +641,9 @@ public class BankAccount{
                     default:
                         break;
                 }
-                
-            } while (option != 4);
+             
+            } while (option != 6);
+ 
             
         }
         else{
