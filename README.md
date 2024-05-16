@@ -35,9 +35,10 @@
 3. Choose account type.
 4. Create password.
 5. Confirm password.
-   **_ Account numbers are generated automatically _**.
-   **_ Default account balance of a new account is 100 _**.
-   **_ Account details will be display once you are finished creating an account _**.
+
+- **_ Account numbers are generated automatically _**.
+- **_ Default account balance of a new account is 100 _**.
+- **_ Account details will be display once you are finished creating an account _**.
 
 **_ CONGRATS YOU HAVE AN ACCOUNT _**
 
@@ -48,7 +49,8 @@
 1. A list of available accounts will be displayed by their account numbers.
 2. Choose one account from the list.
 3. Enter account password.
-   **_ Account details will be displayed on successful login _**.
+
+- **_ Account details will be displayed on successful login _**.
 
 **_ CONGRATS YOU HAVE LOGGED IN _**
 
@@ -71,7 +73,8 @@
 - Steps to withdraw funds from account:
 
 1. Enter amount you want to withdraw.
-   **_ You can't withdraw amounts greater than available funds _**.
+
+- **_ You can't withdraw amounts greater than available funds _**.
 
 ### DEPOSIT
 
@@ -84,9 +87,12 @@
 - Steps to transfer funds to another account:
 
 1. Enter a 10 digit account number you want to transfer funds to.
-   **_ Account number should be one of the existing accounts (use Default Account: 1234567890) if you don't have another account _**.
+
+- **_ Account number should be one of the existing accounts (use Default Account: 1234567890) if you don't have another account _**.
+
 2. Enter amount you want to transfer.
-   **_ You can't transfer amounts greater than available funds_**.
+
+- **_ You can't transfer amounts greater than available funds_**.
 
 ### BALANCE
 
@@ -106,10 +112,10 @@
 
 - `accounts_database.csv` file is where all the accounts info is located.
 - All the values are separated by commas.
-  **_ Account Number, First Name, Last Name, Account Type, Balance, Password _**.
+- **_ Account Number, First Name, Last Name, Account Type, Balance, Password _**.
 
 ### TRANSACTION HISTORY DATABASE
 
 - `transaction_history.csv` file is where transaction history for all accounts is located.
 - All the values are separated by commas.
-  **_ Account Number, Transaction Type, Transaction Date, Amount, Recipient_**.
+- **_ Account Number, Transaction Type, Transaction Date, Amount, Recipient_**.
