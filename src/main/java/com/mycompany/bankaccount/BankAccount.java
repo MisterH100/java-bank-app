@@ -1,12 +1,17 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.bankaccount;
 import java.util.Scanner;
 import java.io.File;  
 import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.Random;
 
 public class BankAccount{
     //instance variables
@@ -20,9 +25,9 @@ public class BankAccount{
     //default values
     public BankAccount(){
         this.accountNumber ="1234567890";
-        this.firstName = "default";
-        this.lastName = "account";
-        this.accountHolder = "default account";
+        this.firstName = "Default";
+        this.lastName = "Account";
+        this.accountHolder = "Default Account";
         this.balance = 100;
         this.accountType = "Checking";
     }
@@ -34,25 +39,32 @@ public class BankAccount{
         return accountNumber;
     }
     
+    //get account first name
     public String getFirstName(){
         return firstName;
     }
+
+    //get account last name
     public String getLastName(){
         return lastName;
     }
-    //get account holder
+
+    //get account holder full name
     public String getAccountHolder(){
         return accountHolder;
     }
-    //get balance
+
+    //get account balance
     public float getBalance(){
         return balance;
     }
+
     //get account type
     public String getAccountType(){
         return accountType;
     }
-    //set details
+
+    //set account details
     public void setDetails(String accNumber,String fname,String lname,String type,String balance){
         float amount = Float.parseFloat(balance);
         this.firstName = fname;
@@ -63,8 +75,10 @@ public class BankAccount{
         this.balance = amount;
         
     }
-    //withdraw funds
+
+    //withdraw method
     public void withdraw(String accountID,float withdrawAmount){
+
         if(withdrawAmount > this.balance){
             System.out.println(" ");
             System.out.println("|------------------------------|"); 
@@ -75,8 +89,9 @@ public class BankAccount{
             System.out.println(" ");
             return;
         }
-        String transactionHistoryDatabaseName = "transaction_history.csv";
-        String accountsDatabaseName = "accounts_database.csv";
+        
+        String transactionHistoryDatabaseName = "database/transaction_history.csv";
+        String accountsDatabaseName = "database/accounts_database.csv";
         ArrayList<String> transactionList = new ArrayList<String>();
         ArrayList<String> accountList = new ArrayList<String>();
         HashMap<String,String> transactionDetails = new HashMap<String,String>();
@@ -99,7 +114,8 @@ public class BankAccount{
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-         for(int i=0;i<accountList.size();i++){
+
+        for(int i=0;i<accountList.size();i++){
             String[] tempArray = accountList.get(i).split(",");
             if(tempArray[0].strip().contentEquals(accountID)){
                 System.out.println("Transferring...");
@@ -133,14 +149,14 @@ public class BankAccount{
                 }
                 break;
             }
-            
         }
-
+        
         transactionDetails.put("accountNumber", accountID);
         transactionDetails.put("transactionType","Withdraw");
         transactionDetails.put("transactionDate",transactionDateString);
         transactionDetails.put("transactionAmount",withdrawAmountString);
         transactionDetails.put("transactionBetween",accountID);
+
         try {
             File database = new File(transactionHistoryDatabaseName);
             Scanner databaseReader = new Scanner(database);
@@ -152,9 +168,8 @@ public class BankAccount{
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+            return;
         }
-
-
 
         transactionList.add(transactionDetails.get("accountNumber")+","+transactionDetails.get("transactionType")+","+transactionDetails.get("transactionDate")+","+transactionDetails.get("transactionAmount")+","+transactionDetails.get("transactionBetween"));
 
@@ -172,6 +187,7 @@ public class BankAccount{
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+            return;
         }
 
         System.out.println(" ");
@@ -185,12 +201,12 @@ public class BankAccount{
         System.out.println("Amount: "+ "-"+withdrawAmount);
         System.out.println("Available Balance: "+ this.balance);
         System.out.println(" ");
-        
     }
-    //deposit funds
+
+    //deposit method
     public void deposit(String accountID,float depositAmount){
-        String transactionHistoryDatabaseName = "transaction_history.csv";
-        String accountsDatabaseName = "accounts_database.csv";
+        String transactionHistoryDatabaseName = "database/transaction_history.csv";
+        String accountsDatabaseName = "database/accounts_database.csv";
         ArrayList<String> transactionList = new ArrayList<String>();
         ArrayList<String> accountList = new ArrayList<String>();
         HashMap<String,String> transactionDetails = new HashMap<String,String>();
@@ -213,7 +229,8 @@ public class BankAccount{
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-         for(int i=0;i<accountList.size();i++){
+
+        for(int i=0;i<accountList.size();i++){
             String[] tempArray = accountList.get(i).split(",");
             if(tempArray[0].strip().contentEquals(accountID)){
                 System.out.println("Transferring...");
@@ -247,15 +264,14 @@ public class BankAccount{
                 }
                 break;
             }
-            
         }
-
 
         transactionDetails.put("accountNumber", accountID);
         transactionDetails.put("transactionType","Deposit");
         transactionDetails.put("transactionDate",transactionDateString);
         transactionDetails.put("transactionAmount",depositAmountString);
         transactionDetails.put("transactionBetween",accountID);
+
         try {
             File database = new File(transactionHistoryDatabaseName);
             Scanner databaseReader = new Scanner(database);
@@ -267,6 +283,7 @@ public class BankAccount{
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+            return;
         }
 
         transactionList.add(transactionDetails.get("accountNumber")+","+transactionDetails.get("transactionType")+","+transactionDetails.get("transactionDate")+","+transactionDetails.get("transactionAmount")+","+transactionDetails.get("transactionBetween"));
@@ -287,7 +304,6 @@ public class BankAccount{
             e.printStackTrace();
         }
 
-
         System.out.println(" ");
         System.out.println("|------------------------------|"); 
         System.out.println("Transaction Complete");
@@ -300,10 +316,11 @@ public class BankAccount{
         System.out.println("Available Balance: "+ this.balance);
         System.out.println(" ");
     }
-
+    
+    //transfer method
     public void transfer(String accountID,float transferAmount){
-        String accountsDatabaseName = "accounts_database.csv";
-        String transactionHistoryDatabaseName = "transaction_history.csv";
+        String accountsDatabaseName = "database/accounts_database.csv";
+        String transactionHistoryDatabaseName = "database/transaction_history.csv";
         ArrayList<String> accountList = new ArrayList<String>();
         ArrayList<String> transactionList = new ArrayList<String>();
         HashMap<String, String> accountDetails = new HashMap<String, String>();
@@ -322,10 +339,12 @@ public class BankAccount{
             System.out.println(" ");
             return;
         }
+
         System.out.println(" ");
         System.out.println("|------------------------------|"); 
         System.out.println("Transfer to: "+ accountID);
         System.out.println("Amount: "+ transferAmount);
+
         try {
             File database = new File(accountsDatabaseName);
             Scanner databaseReader = new Scanner(database);
@@ -338,10 +357,13 @@ public class BankAccount{
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+            return;
         }
+
         System.out.println(" ");
         System.out.println("Validating account number...");
         boolean transferred = false;
+
         for(int i=0;i<accountList.size();i++){
             String[] tempArray = accountList.get(i).split(",");
             if(tempArray[0].strip().contentEquals(accountID)){
@@ -373,12 +395,12 @@ public class BankAccount{
                 } catch (IOException e) {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
-                    transferred = false;
+                    return;
+                    
                 }
                 transferred = true;
                 break;
             }
-            
         }
 
         transactionDetails.put("accountNumber", this.accountNumber);
@@ -386,6 +408,7 @@ public class BankAccount{
         transactionDetails.put("transactionDate",transactionDateString);
         transactionDetails.put("transactionAmount",transferAmountString);
         transactionDetails.put("transactionBetween",accountID);
+
         try {
             File database = new File(transactionHistoryDatabaseName);
             Scanner databaseReader = new Scanner(database);
@@ -397,6 +420,7 @@ public class BankAccount{
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+            return;
         }
 
         transactionList.add(transactionDetails.get("accountNumber")+","+transactionDetails.get("transactionType")+","+transactionDetails.get("transactionDate")+","+transactionDetails.get("transactionAmount")+","+transactionDetails.get("transactionBetween"));
@@ -415,8 +439,8 @@ public class BankAccount{
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+            return;
         }
-
 
         if(transferred){
             System.out.println("|------------------------------|"); 
@@ -432,8 +456,9 @@ public class BankAccount{
         }
     }
 
+    //get transaction history method
     public void getTransactions(String accountID){
-        String transactionHistoryDatabaseName = "transaction_history.csv";
+        String transactionHistoryDatabaseName = "database/transaction_history.csv";
         ArrayList<String> transactionList = new ArrayList<String>();
         int count =0;
         int match =0;
@@ -449,14 +474,18 @@ public class BankAccount{
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+            return;
         }
+
         System.out.println("|------------------------------|");
         System.out.println("Transaction History");
         System.out.println(" ");
+
         if(transactionList.size() <1){
             System.out.println("No transaction history at this moment");
             return;
         }
+
         for(int i=0;i<transactionList.size();i++){
             String[] tempArray = transactionList.get(i).split(",");
             if(tempArray[0].contentEquals(accountID)){
@@ -468,13 +497,13 @@ public class BankAccount{
                 System.out.println("To: "+ tempArray[4]);
                 System.out.println("|------------------------------|");
             }
+
             if(count == transactionList.size()-1){
                 if(match ==0){
                     System.out.println("No transaction history for this account at the moment");
                 }
             }
             count = count+1;
-
         }
     }
 
@@ -484,7 +513,8 @@ public class BankAccount{
         int option;
         float amount;
         String accountID;
-        final String accountsDatabaseName = "accounts_database.csv";
+        final String accountsDatabaseName = "database/accounts_database.csv";
+        final String transactionDatabaseName = "database/transaction_history.csv";
         HashMap<String, String> accountDetails = new HashMap<String, String>();
         BankAccount account = new BankAccount(); 
         @SuppressWarnings("resource")
@@ -492,10 +522,10 @@ public class BankAccount{
         
         //create=ing CSV files (databases)
         try {
-            File accounts_file = new File("accounts_database.csv");
+            File accounts_file = new File(accountsDatabaseName);
             if (accounts_file.createNewFile()) {
-            System.out.println("Created accounts database");
-        } else {
+                System.out.println("Created accounts database");
+            } else {
             System.out.println("Connected to accounts database.");
             }
         } catch (IOException e) {
@@ -504,17 +534,17 @@ public class BankAccount{
         }
         
         try {
-            File transactions_file = new File("transaction_history.csv");
+            File transactions_file = new File(transactionDatabaseName);
             if (transactions_file.createNewFile()) {
-            System.out.println("Created to transactions database");
-        } else {
+                System.out.println("Created to transactions database");
+            } else {
             System.out.println("Connected to transactions database.");
             }
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
-        }  
-
+        }
+        
         System.out.println(" ");
         System.out.println("***WELCOME TO THOBEKA BANKING, WHERE WE TAKE YOUR MONEY SERIOUSLY***");
         System.out.println("");
@@ -533,6 +563,8 @@ public class BankAccount{
             String accountType;
             String[] accountTypeOptions = {"Checking","Savings"};
             final String initialBalance = "100";
+            String password;
+            String confirmPassword;
             ArrayList<String> accountList = new ArrayList<String>();
 
             //prompt user to enter details and store them in a hashmap
@@ -550,6 +582,30 @@ public class BankAccount{
             System.out.print("Choose Account Type (options:1,2): ");
             option = mainInput.nextInt();
             accountType = accountTypeOptions[option-1];
+            accountDetails.put("accountType",accountType);
+            mainInput.nextLine();
+
+            System.out.print("Create password (password must be 6 characters long): ");
+            password = mainInput.nextLine();
+
+            if(password.strip().length() >6){
+                System.out.println(" ");
+                System.out.println("WARNING: Passwords longer than 6 character can not be parsed, restart program");
+                System.out.println(" ");
+                return;
+            }
+
+            System.out.print("Confirm password: ");
+            confirmPassword = mainInput.nextLine();
+
+            if(!password.strip().contentEquals(confirmPassword.strip())){
+                System.out.println(" ");
+                System.out.println("Passwords do not match");
+                System.out.println(" ");
+                return;
+            }
+
+            accountDetails.put("password",password);
             
             //generating 10 digit account number 
             Random random = new Random();
@@ -557,30 +613,29 @@ public class BankAccount{
             digits[0] = (char) (random.nextInt(9) + '1');
             for(int i=1; i<digits.length; i++) {
                 digits[i] = (char) (random.nextInt(10) + '0');
-            }
-            
+            } 
             long generatedAccNumber= Long.parseLong(new String(digits));
-
             accountNumber = Long.toString(generatedAccNumber);
             accountDetails.put("accountNumber",accountNumber);
-            accountDetails.put("accountType",accountType);
+
             accountDetails.put("balance",initialBalance);
             
             try {
-            File database = new File(accountsDatabaseName);
-            Scanner databaseReader = new Scanner(database);
-            while (databaseReader.hasNextLine()) {
-                String data = databaseReader.nextLine();
-                accountList.add(data);
-                
-            }
-            databaseReader.close();
+                File database = new File(accountsDatabaseName);
+                Scanner databaseReader = new Scanner(database);
+                while (databaseReader.hasNextLine()) {
+                    String data = databaseReader.nextLine();
+                    accountList.add(data);
+                }
+                databaseReader.close();
             } catch (FileNotFoundException e) {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
+                return;
             }
             
-            accountList.add(accountDetails.get("accountNumber")+","+accountDetails.get("firstName")+","+accountDetails.get("lastName")+","+accountDetails.get("accountType")+","+accountDetails.get("balance"));
+            accountList.add(accountDetails.get("accountNumber")+","+accountDetails.get("firstName")+","+accountDetails.get("lastName")+","+accountDetails.get("accountType")+","+accountDetails.get("balance")+","+accountDetails.get("password"));
+
             //write details to CSV file (database)
             try {
                 FileWriter myWriter = new FileWriter(accountsDatabaseName);
@@ -630,6 +685,7 @@ public class BankAccount{
                 System.out.print("Choose transaction (options:1,2,3,4,5,6): ");
                 option = mainInput.nextInt();
                 mainInput.nextLine();
+
                 switch(option){
                     case 1:
                         //withdrawal
@@ -680,12 +736,11 @@ public class BankAccount{
                     default:
                         break;
                 }
-                
             } while (option != 6);
-            
         }
         else if (choice ==2) {
             //local scope variables
+            String password;
             ArrayList<String> accountList = new ArrayList<String>();
             String[] accountDetailsList;                            
 
@@ -701,6 +756,7 @@ public class BankAccount{
             } catch (FileNotFoundException e) {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
+                return;
             }
 
             //check if the database is empty, exit if it is
@@ -714,12 +770,15 @@ public class BankAccount{
             System.out.println("|------------------------------|"); 
             System.out.println("Account(s) found:");
             System.out.println(" ");
+            
             for(int i =0; i<accountList.size();i++){
                 String[] tempList = accountList.get(i).split(",");
                 System.out.println(i+1+". "+tempList[0]);
             }
+
             System.out.print("Choose account (options: 1,2,...): ");
             option = mainInput.nextInt();
+            mainInput.nextLine();
 
             //add chosen account details to the hashmap
             accountDetailsList = accountList.get(option-1).split(",");
@@ -728,6 +787,15 @@ public class BankAccount{
             accountDetails.put("lastName", accountDetailsList[2].strip());
             accountDetails.put("accountType", accountDetailsList[3].strip());
             accountDetails.put("balance", accountDetailsList[4].strip());
+            accountDetails.put("password",accountDetailsList[5].strip());
+
+            System.out.print("Enter password: ");
+            password = mainInput.nextLine();
+
+            if(!accountDetails.get("password").strip().contentEquals(password.strip())){
+                System.out.println("Incorrect password");
+                return;
+            }
 
             //set account details using the setDetails method
             account.setDetails(accountDetails.get("accountNumber"),accountDetails.get("firstName"),accountDetails.get("lastName"),accountDetails.get("accountType"),accountDetails.get("balance"));
@@ -759,6 +827,7 @@ public class BankAccount{
                 System.out.print("Choose transaction (options:1,2,3,4,5,6): ");
                 option = mainInput.nextInt();
                 mainInput.nextLine();
+
                 switch(option){
                     case 1:
                         //withdrawal
@@ -809,14 +878,10 @@ public class BankAccount{
                     default:
                         break;
                 }
-             
             } while (option != 6);
- 
-            
         }
         else{
             System.out.println("***Thank you for choosing THOBEKA BANKING***");
         }
-                 
     }
 }
